@@ -1,0 +1,179 @@
+Run all python code using python 2.7. 
+
+
+required python modules
+
+numpy
+scipy
+csv
+
+
+1. Un-zip all files into empty directory
+
+Contents of zip file contain code for two different subset selection algorithms for multiple linear regression
+	- Robust Algorithm
+	- Stepwise Algorithm (Bi-directional)
+
+-----------------------------------------------------------
+-------------------Robust Algorithm------------------------
+-----------------------------------------------------------
+
+optional but preferred command line dependencies
+
+	gnuplot - command line plotting tool
+
+		sudo apt-get install gnuplot
+
+
+
+1. run Robust.py, it reads the csv files in child directory 'test/'
+	$ python Robust.py
+
+2. Process take about 20 minutes, please be patient.
+
+3. Robust.py will save 10 csv files in directory.
+	- Each file corresponds to all the models for a length of predictor (1-10)
+
+4.  (optional) run PlotData.sh to graph parameter space. Save plots to png files  
+
+	- Might need to change permission before running, in directory type
+
+	$ chmod -x PlotData.sh
+
+     	- To run
+
+	$ ./PlotData.sh
+	
+
+
+5. From images, choose the minimum value for Annual Return, Sharpe Ratio and Adjusted R-squared
+
+	- I chose not to automate this to give the investor more room to move
+
+
+6. Edit ModelSpeci.py variables to choice. Or leave as be. 
+	
+	minAnnRet = 1.3
+	minSharpe = 3
+	minForRsq = 0.03
+
+	- Should have put it as arguements ModelSpeci.py but had a bit of trouble
+	- ModelSpeci reads back in all the models that are above the minimum threshold
+	- Chose to seperate into two programs as running Robust.py takes a long time. ModelSpeci.py can be rerun quickly. 
+
+7. run ModelSpeci.py
+	$ python ModelSpeci.py
+
+	- Saves files called:
+		 forecasts_train_model0.csv, forecasts_train_model1.csv, forecasts_train_model2.csv
+		 forecasts_test_model0.csv,  forecasts_test_model1.csv,  forecasts_test_model2.csv
+		 forecasts_trade_model0.csv, forecasts_trade_model1.csv, forecasts_trade_model2.csv
+		
+
+8. Either use simulate.py or read the screen for output statistics
+
+
+
+
+
+
+--------Robust Algorithm: How Robust.py Works------------------------
+
+	A. perm_unique creates an list called item that is a
+		combinations of 1,0,1,1,0 
+		e.g. [1,1,1,1,1,1,1,0,0,1,0,1,0,0,0,0,0,0,0,0]
+		positions corresponding to predictor columns
+
+	B. Least squares optimize func is run that minimises residuals
+
+	C. Calculates different metrics
+
+	D. Saves metrics to rows
+		Row1 AnnRet, SharpeR, AnnVola, Adj_R_sq
+		Row2 predictors
+		Row3 Coefficients
+
+	
+--------Robust Algorithm: How ModelSpeci.py Works-----------------
+
+	A. Runs through all files, reads rows and saves to list
+		if above threshold metrics
+	
+	B. Validation, splits data into 4 equal parts.
+		B.1 Runs leastsq on each part
+		B.2 Runs Diagnostics
+		B.3 Ratio Split metric / Whole data metric
+		B.4 Calculates geometric mean for every indv models metrics 
+	C. Sorts by adj-R^2 or (another).
+	
+	D. Top 3 win.  
+	
+	E. Forecasts are saved to csv files. 	
+
+
+
+
+-----------------------------------------------------------
+------------------- Stepwise Algorithm --------------------
+-----------------------------------------------------------
+
+1. run Stepwise.py
+	$ python Stepwise.py
+
+	- Saves files called:
+		 forecasts_train_model0.csv, forecasts_train_model1.csv, forecasts_train_model2.csv
+		 forecasts_test_model0.csv,  forecasts_test_model1.csv,  forecasts_test_model2.csv
+		 forecasts_trade_model0.csv, forecasts_trade_model1.csv, forecasts_trade_model2.csv	
+
+2. Either use simulate.py or read the screen for output statistics
+
+
+
+--------Stepwise Algorithm: How Stepwise.py Works-----------------
+
+	A. Start with empty list
+
+	B. Runs through all predictors looking for largest R^2. 
+
+	C. Adds to list
+
+	D. Looks to remove predictor that maximises R^2
+
+	E. Removes if maximises
+
+	F. Repeat from B until no change
+
+	G. For all models produced, calculated mallow's. Choose smallest 3
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	 
+
+
+
+
+
